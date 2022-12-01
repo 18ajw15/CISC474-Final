@@ -1,5 +1,6 @@
 from ghost import Ghost
 
+
 def get_possible_actions(position, level):
     actions = []
     north = [position[0] - 1, position[1]]
@@ -23,6 +24,35 @@ def get_possible_actions(position, level):
         actions.append(west)
     
     return actions
+
+
+# Can change the parameters of collision() and next() to not have pacman, ghost1, etc.
+
+def collision(pacman, ghost1, ghost2, ghost3):
+    if pacman.position == ghost1.position:
+        game_over()
+    elif pacman.position == ghost2.position:
+        game_over()
+    elif pacman.position == ghost3.position:
+        game_over()
+
+
+def next(pacman, ghost1, ghost2, ghost3):
+    pacman.move()
+    collision(pacman, ghost1, ghost2, ghost3)
+
+    ghost1.move()
+    collision(pacman, ghost1, ghost2, ghost3)
+
+    ghost2.move()
+    collision(pacman, ghost1, ghost2, ghost3)
+
+    ghost3.move()
+    collision(pacman, ghost1, ghost2, ghost3)
+
+# !!!!!!!!!!!!!!!!!
+def game_over():
+    pass
 
 # Initialize level
 
