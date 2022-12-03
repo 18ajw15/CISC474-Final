@@ -1,5 +1,6 @@
 from ghost import Ghost
-
+from pacman import Pacman
+from level import Level
 
 def get_possible_actions(position, level):
     actions = []
@@ -58,13 +59,15 @@ def next(pacman, ghost1, ghost2, ghost3):
     return False
 # Initialize level
 game_over = False
+level = Level()
 
 # Initialize Pacman
+pacman = Pacman("Starting Position", level)
 
 # Initialize Ghosts
-ghost1 = Ghost("Starting Position 1")
-ghost2 = Ghost("Starting Position 2")
-ghost3 = Ghost("Starting Position 3")
+ghost1 = Ghost("Starting Position 1", level)
+ghost2 = Ghost("Starting Position 2", level)
+ghost3 = Ghost("Starting Position 3", level)
 
 while not game_over:
-    
+    next()
