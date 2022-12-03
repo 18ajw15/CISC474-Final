@@ -30,31 +30,34 @@ def get_possible_actions(position, level):
 
 def collision(pacman, ghost1, ghost2, ghost3):
     if pacman.position == ghost1.position:
-        game_over()
+        return True
     elif pacman.position == ghost2.position:
-        game_over()
+        return True
     elif pacman.position == ghost3.position:
-        game_over()
+        return True
+    return False
 
 
 def next(pacman, ghost1, ghost2, ghost3):
     pacman.move()
-    collision(pacman, ghost1, ghost2, ghost3)
+    if (collision(pacman, ghost1, ghost2, ghost3)):
+        return True
 
     ghost1.move()
-    collision(pacman, ghost1, ghost2, ghost3)
-
+    if (collision(pacman, ghost1, ghost2, ghost3)):
+        return True
+    
     ghost2.move()
-    collision(pacman, ghost1, ghost2, ghost3)
+    if (collision(pacman, ghost1, ghost2, ghost3)):
+        return True
 
     ghost3.move()
-    collision(pacman, ghost1, ghost2, ghost3)
-
-# !!!!!!!!!!!!!!!!!
-def game_over():
-    pass
-
+    if (collision(pacman, ghost1, ghost2, ghost3)):
+        return True
+    
+    return False
 # Initialize level
+game_over = False
 
 # Initialize Pacman
 
@@ -63,4 +66,5 @@ ghost1 = Ghost("Starting Position 1")
 ghost2 = Ghost("Starting Position 2")
 ghost3 = Ghost("Starting Position 3")
 
-
+while not game_over:
+    
