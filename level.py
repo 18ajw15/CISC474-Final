@@ -34,22 +34,26 @@ class Level:
             for y in range(y1, y2 + 1):
                 self.replace_space(x, y, space_dest, space_src)
 
-    def get_wall_coordinates(self):
+    def get_space_coordinates(self, space):
         coordinates = []
         for x in range(self.width):
             for y in range(self.height):
-                if self.get_space(x, y) == Space.WALL:
+                if self.get_space(x, y) == space:
                     coordinates.append( (x, y) )
         return coordinates
+
+    def get_wall_coordinates(self):
+        return self.get_space_coordinates(Space.WALL)
     
     def __str__(self):
         string_representation = self.str_x_coordinates()+"\n"
         for y in range(self.height):
-            string_representation += str(y%10)+" "
+            truncated_y = str(y%10)
+            string_representation += truncated_y + " "
             for x in range(self.width):
                 string_representation += self.get_space(x, y).value+" "
-            string_representation += str(y%10)+"\n"
-        return string_representation+self.str_x_coordinates()
+            string_representation += truncated_y + "\n"
+        return string_representation + self.str_x_coordinates()
     
     def str_x_coordinates(self):
         string_representation = "X "
