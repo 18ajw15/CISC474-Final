@@ -1,6 +1,7 @@
 from ghost import Ghost
 from pacman import Pacman
-from level import DefaultLevel
+from level import *
+from learning import *
 
 def get_possible_actions(position, level):
     actions = []
@@ -35,12 +36,10 @@ def collision(pacman, ghosts):
           return True
     return False
 
-
 def next(pacman, ghosts):
     pacman.move(get_possible_actions(pacman.position)) # Need to  change the move function depending on how we do the qlearning
     if (collision(pacman, ghosts)):
         return True
-    
     for ghost in ghosts:
         ghost.move(get_possible_actions(ghost.position))
     if (collision(pacman, ghosts)):
@@ -48,19 +47,26 @@ def next(pacman, ghosts):
     
     return False
 
-# Initialize level
-game_over = False
-level = DefaultLevel()
-
-# Initialize Pacman
-pacman = Pacman(level.get_pacman_start(), level)
-
-# Initialize Ghosts
-ghosts = []
-for position in level.get_ghost_starts():
-    ghosts.append(Ghost(position, level))
-
-while not game_over:
-    if (next()):
-        game_over = True
-        # Assign rewards?
+if __name__ == "__main__":
+    level = BerkeleyLevel()
+    epsilon = 0.1
+    q_table = q_learning(level, epsilon, 0.1, 0.9, 5000)
+    #print(q_table.states)
+    state = State(level)
+    rewards = Rewards(-1, 10, 500, -500)
+    while True:
+        print(state.pacman.position)
+        print(state.level.to_string(state.pacman, state.ghosts))
+        print(q_table.get_action_to_q_value_dictionary(state))
+        _in = input()
+        if _in == "w":
+            action = (-1, 0)
+        elif _in == "e":
+            action = (1, 0)
+        elif _in == "n":
+            action = (0, -1)
+        elif _in == "s":
+            action = (0, 1)
+        else:
+            action = q_table.get_epsilon_greedy_policy(state, state.pacman.get_possible_actions(), epsilon)
+        state = state.next(action, rewards).state

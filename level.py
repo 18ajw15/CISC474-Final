@@ -12,10 +12,11 @@ class Level:
         self.height = height
         self.pacman_start = pacman_start
         self.ghost_starts = ghost_starts
-        self.ghost_count = len(ghost_starts)
 
     def get_space(self, x, y):
-        return self.grid[x][y]
+        if (0 <= x < self.width) and (0 <= y < self.height):
+            return self.grid[x][y]
+        return Space.WALL
     
     def set_space(self, x, y, space):
         self.grid[x][y] = space
@@ -31,11 +32,32 @@ class Level:
     
     def get_ghost_starts(self):
         return self.ghost_starts
+    
+    def is_space_wall(self, x, y):
+        return self.get_space(x, y) == Space.WALL
 
     def replace_space(self, x, y, space_dest, space_src):
         if self.get_space(x, y) == space_dest:
             self.set_space(x, y, space_src)
     
+    def pacman_has_won(self):
+        return len(self.get_space_coordinates(Space.PELLET)) == 0
+
+    def nearest_pellet(self, x, y):
+        position = (x, y)
+        distance = float('inf')
+        for x_pos in range(self.width):
+            for y_pos in range(self.height):
+                if self.get_space(x_pos, y_pos) == Space.PELLET:
+                    new_dist = manhattan_distance((x_pos, y_pos), (x, y))
+                    if new_dist < distance:
+                        distance = new_dist
+                        position = (x_pos, y_pos)
+        return position
+    
+    def get_pellet_tuple(self):
+        return tuple(self.get_space_coordinates(Space.PELLET))
+
     def consume_pellet(self, x, y):
         self.replace_space(x, y, Space.PELLET, Space.EMPTY)
     
@@ -61,7 +83,14 @@ class Level:
         return coordinates
 
     def get_wall_coordinates(self):
-        return self.get_space_coordinates(Space.WALL)
+        walls = self.get_space_coordinates(Space.WALL)
+        for x in range(-1, self.width + 1):
+            walls.append((x, -1))
+            walls.append((x, self.height))
+        for y in range(-1, self.height + 1):
+            walls.append((-1, y))
+            walls.append((self.width, y))
+        return walls
     
     def __str__(self):
         string_representation = self.str_x_coordinates()+"\n"
@@ -70,6 +99,23 @@ class Level:
             string_representation += truncated_y + " "
             for x in range(self.width):
                 string_representation += self.get_space(x, y).value+" "
+            string_representation += truncated_y + "\n"
+        return string_representation + self.str_x_coordinates()
+
+    def to_string(self, pacman, ghosts):
+        string_representation = self.str_x_coordinates()+"\n"
+        for y in range(self.height):
+            truncated_y = str(y%10)
+            string_representation += truncated_y + " "
+            for x in range(self.width):
+                new_rep = self.get_space(x, y).value
+                if pacman.position[0] == x and pacman.position[1] == y:
+                    new_rep = "o"
+                for i in range(len(ghosts)):
+                    ghost = ghosts[i]
+                    if ghost.position[0] == x and ghost.position[1] == y:
+                        new_rep = str(i)
+                string_representation += new_rep+" "
             string_representation += truncated_y + "\n"
         return string_representation + self.str_x_coordinates()
     
@@ -82,10 +128,27 @@ class Level:
     def reset_pellets(self):
         pass
 
+class BerkeleyLevel(Level):
+    def __init__(self):
+        pacman_start = (8, 4)
+        ghost_starts = [(8, 2), (9, 2)]
+        super().__init__(18, 5, pacman_start, ghost_starts)
+        self.set_chunk(1, 1, 2, 3, Space.WALL)
+        self.set_chunk(4, 1, 4, 3, Space.WALL)
+        self.set_chunk(15, 1, 16, 3, Space.WALL)
+        self.set_chunk(13, 1, 13, 3, Space.WALL)
+        self.set_chunk(6, 0, 11, 1, Space.WALL)
+        self.set_chunk(6, 3, 11, 3, Space.WALL)
+        self.reset_pellets()
+    
+    def reset_pellets(self):
+        self.replace_chunk(0, 0, self.width-1, self.height-1, Space.EMPTY, Space.PELLET)
+        self.replace_chunk(8, 4, 8, 4, Space.PELLET, Space.EMPTY)
+
 class DefaultLevel(Level):
     def __init__(self):
         pacman_start = (12, 22)
-        ghost_starts = [(11, 10), (12, 10), (13, 10), (14, 10)]
+        ghost_starts = [(9, 10), (11, 10), (13, 10), (15, 10)]
         super().__init__(26, 29, pacman_start, ghost_starts)
         self.set_chunk(12, 0, 13, 3, Space.WALL)
         self.set_chunk(1, 1, 4, 3, Space.WALL)
@@ -135,3 +198,10 @@ class DefaultLevel(Level):
         self.replace_chunk(0, 0, self.width-1, self.height-1, Space.EMPTY, Space.PELLET)
         self.replace_chunk(8, 8, 17, 18, Space.PELLET, Space.EMPTY)
         self.replace_chunk(12, 22, 13, 22, Space.PELLET, Space.EMPTY)
+
+def manhattan_distance(pos1, pos2):
+    return abs(pos1[0]-pos2[0]) + abs(pos1[1]-pos2[1])
+
+if __name__ == "__main__":
+    l = BerkeleyLevel()
+    print(l)
