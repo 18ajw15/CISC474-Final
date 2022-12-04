@@ -39,6 +39,9 @@ class Level:
     def consume_pellet(self, x, y):
         self.replace_space(x, y, Space.PELLET, Space.EMPTY)
     
+    def space_is_pellet(self, x, y):
+        return self.get_space(x, y) == Space.PELLET
+    
     def set_chunk(self, x1, y1, x2, y2, space):
         for x in range(x1, x2 + 1):
             for y in range(y1, y2 + 1):
@@ -75,6 +78,9 @@ class Level:
         for x in range(self.width):
             string_representation += str(x%10)+" "
         return string_representation+"X"
+    
+    def reset_pellets(self):
+        pass
 
 class DefaultLevel(Level):
     def __init__(self):
@@ -123,6 +129,9 @@ class DefaultLevel(Level):
         self.set_chunk(12, 25, 13, 27, Space.WALL)
         self.set_chunk(15, 26, 24, 27, Space.WALL)
 
+        self.reset_pellets()
+    
+    def reset_pellets(self):
         self.replace_chunk(0, 0, self.width-1, self.height-1, Space.EMPTY, Space.PELLET)
         self.replace_chunk(8, 8, 17, 18, Space.PELLET, Space.EMPTY)
         self.replace_chunk(12, 22, 13, 22, Space.PELLET, Space.EMPTY)
