@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class pacman:
+class Pacman:
     def __init__(self, starting_position, level, actions):
         self.position = starting_position
         self.level = level
