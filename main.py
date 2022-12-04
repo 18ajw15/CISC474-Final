@@ -40,19 +40,19 @@ def collision(pacman, ghost1, ghost2, ghost3):
 
 
 def next(pacman, ghost1, ghost2, ghost3):
-    pacman.move()
+    pacman.move(get_possible_actions(pacman.position)) # Need to  change the move function depending on how we do the qlearning
     if (collision(pacman, ghost1, ghost2, ghost3)):
         return True
 
-    ghost1.move()
+    ghost1.move(get_possible_actions(ghost1.position))
     if (collision(pacman, ghost1, ghost2, ghost3)):
         return True
     
-    ghost2.move()
+    ghost2.move(get_possible_actions(ghost2.position))
     if (collision(pacman, ghost1, ghost2, ghost3)):
         return True
 
-    ghost3.move()
+    ghost3.move(get_possible_actions(ghost3.position))
     if (collision(pacman, ghost1, ghost2, ghost3)):
         return True
     
@@ -70,4 +70,6 @@ ghost2 = Ghost("Starting Position 2", level)
 ghost3 = Ghost("Starting Position 3", level)
 
 while not game_over:
-    next()
+    if (next()):
+        game_over = True
+        # Assign rewards?

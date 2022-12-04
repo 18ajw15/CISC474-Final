@@ -5,9 +5,8 @@ class Ghost:
         self.position = starting_position
         self.level = level
 
-    def move(self):
+    def move(self, possible_actions):
         # Get possible actions and then pick a random action (random policy)
-        possible_actions = self.get_possible_actions()
         
         probability = random.randrange(len(possible_actions))
 
