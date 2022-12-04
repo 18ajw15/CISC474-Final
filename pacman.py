@@ -2,13 +2,11 @@ import numpy as np
 
 
 class Pacman:
-    def __init__(self, starting_position, level, possibleActions, action):
+    def __init__(self, starting_position, level, possibleActions):
         self.position = starting_position
         self.level = level
         self.possibleMoves = possibleActions
-        self.action = action
-        
-
+   
     def eGreedy(self,grid, epsilon):
 
         #Two lines gets the max value found in qtable for specific state
@@ -32,10 +30,9 @@ class Pacman:
         for i in self.possibleMoves:
             coord = (i[0], i[1])
             possibleActions.append(coord)
-
         return possibleActions
-    def move(self, action):
-        
-    given an action update the position
-        
 
+    def move(self, action):
+        updatePostion = (self.position[0]+action[0], self.position[1]+action[1])
+        self.position = updatePostion
+  
