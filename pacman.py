@@ -2,10 +2,11 @@ import numpy as np
 
 
 class Pacman:
-    def __init__(self, starting_position, level, actions):
+    def __init__(self, starting_position, level, possibleActions, action):
         self.position = starting_position
         self.level = level
-        self.possibleMoves = actions
+        self.possibleMoves = possibleActions
+        self.action = action
         
 
     def eGreedy(self,grid, epsilon):
@@ -26,8 +27,15 @@ class Pacman:
         nonUniform = np.random.choice(self.possibleMoves, size = 1, p = probability)
         return nonUniform.item()
 
-    def move(self):
-        bestAction = self.eGreedy(self.level, 0.5)
-        return bestAction
+    def getPossibleActions(self, actions):
+        possibleActions = []
+        for i in self.possibleMoves:
+            coord = (i[0], i[1])
+            possibleActions.append(coord)
+
+        return possibleActions
+    def move(self, action):
+        
+    given an action update the position
         
 
