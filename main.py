@@ -1,6 +1,6 @@
 from ghost import Ghost
 from pacman import Pacman
-from level import Level
+from level import DefaultLevel
 
 def get_possible_actions(position, level):
     actions = []
@@ -59,7 +59,7 @@ def next(pacman, ghost1, ghost2, ghost3):
     return False
 # Initialize level
 game_over = False
-level = Level()
+level = DefaultLevel()
 
 # Initialize Pacman
 pacman = Pacman("Starting Position", level)
