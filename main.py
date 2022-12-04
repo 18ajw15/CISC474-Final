@@ -4,10 +4,10 @@ from level import DefaultLevel
 
 def get_possible_actions(position, level):
     actions = []
-    north = [position[0] - 1, position[1]]
-    south = [position[0] + 1, position[1]]
-    east = [position[0], position[1] + 1]
-    west = [position[0], position[1] - 1]
+    north = (position[0] - 1, position[1])
+    south = (position[0] + 1, position[1])
+    east = (position[0], position[1] + 1)
+    west = (position[0], position[1] - 1)
 
     walls = level.get_wall_coordinates("____") # Need to change level variable
     
@@ -53,15 +53,12 @@ game_over = False
 level = DefaultLevel()
 
 # Initialize Pacman
-pacman = Pacman([22,12], level)
+pacman = Pacman(level.get_pacman_start(), level)
 
 # Initialize Ghosts
-ghost1 = Ghost([10,11], level)
-ghost2 = Ghost([10,12], level)
-ghost3 = Ghost([10,13], level)
-ghost4 = Ghost([10,14], level)
-
-ghosts = [ghost1, ghost2, ghost3, ghost4]
+ghosts = []
+for position in level.get_ghost_starts():
+    ghosts.append(Ghost(position, level))
 
 while not game_over:
     if (next()):
