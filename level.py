@@ -6,16 +6,31 @@ class Space(Enum):
     PELLET = "."
 
 class Level:
-    def __init__(self, width, height):
+    def __init__(self, width, height, pacman_start = (0, 0), ghost_starts = [(0, 0)]):
         self.grid = [[Space.EMPTY for _ in range(height)] for _ in range(width)]
         self.width = width
         self.height = height
+        self.pacman_start = pacman_start
+        self.ghost_starts = ghost_starts
+        self.ghost_count = len(ghost_starts)
 
     def get_space(self, x, y):
         return self.grid[x][y]
     
     def set_space(self, x, y, space):
         self.grid[x][y] = space
+
+    def set_pacman_start(self, start):
+        self.pacman_start = start
+    
+    def get_pacman_start(self):
+        return self.pacman_start
+
+    def set_ghost_starts(self, starts):
+        self.ghost_starts = starts
+    
+    def get_ghost_starts(self):
+        return self.ghost_starts
 
     def replace_space(self, x, y, space_dest, space_src):
         if self.get_space(x, y) == space_dest:
@@ -63,7 +78,9 @@ class Level:
 
 class DefaultLevel(Level):
     def __init__(self):
-        super().__init__(26, 29)
+        pacman_start = (12, 22)
+        ghost_starts = [(11, 10), (12, 10), (13, 10), (14, 10)]
+        super().__init__(26, 29, pacman_start, ghost_starts)
         self.set_chunk(12, 0, 13, 3, Space.WALL)
         self.set_chunk(1, 1, 4, 3, Space.WALL)
         self.set_chunk(6, 1, 10, 3, Space.WALL)
