@@ -3,6 +3,7 @@ from pacman import Pacman
 from ghost import Ghost
 from copy import copy
 import vector as vec
+from statistics import mean
 
 class State_Next_Struct:
     def __init__(self, state, reward, is_terminal):
@@ -27,8 +28,8 @@ class State:
             ghost = Ghost(start, level)
             self.ghosts.append(ghost)
         self.level = level
-        self.nearest_pellet = level.nearest_pellet(self.pacman.position[0], self.pacman.position[1])
-        self.nearest_pellet = (self.nearest_pellet[0] - self.pacman.position[0], self.nearest_pellet[1] - self.pacman.position[1])
+        self.nearest_pellet_dir = level.nearest_pellet_dir(self.pacman.position[0], self.pacman.position[1])
+        self.nearest_pellet_dir = vec.sub(self.nearest_pellet_dir, self.pacman.position)
         self.ghost_positions = []
         for ghost in self.ghosts:
             self.ghost_positions.append(ghost.position)
@@ -73,12 +74,10 @@ class State:
         return pacman.position == ghost.position
     
     def get_characteristics(self):
-        return (self.pacman.position, self.pacman.direction, self.nearest_pellet, self.ghost_positions)
+        return (self.pacman.position, self.pacman.direction, self.nearest_pellet_dir, self.ghost_positions)
 
 class Q_Table:
-    def __init__(self, width, height, actions, initial_q_values):
-        self.width = width
-        self.height = height
+    def __init__(self, actions, initial_q_values):
         self.action_to_qs = {}
         for action in actions:
             self.action_to_qs[action] = initial_q_values
@@ -130,9 +129,9 @@ class Q_Table:
 
 def q_learning(level, epsilon, alpha, discount_rate, max_episode):
     rewards = Rewards_Struct(-1, 10, 500, -500)
-    max_steps = 250
+    max_steps = 500
     interval = 100
-    q_table = Q_Table(level.width, level.height, vec.get_unit_vecs(), 0)
+    q_table = Q_Table(vec.get_unit_vecs(), 0)
     scores = []
     for episode in range(max_episode):
         if episode % interval == 0:
@@ -153,13 +152,7 @@ def q_learning(level, epsilon, alpha, discount_rate, max_episode):
                 break
         scores.append(score)
         if episode % interval == interval - 1:
-            print("Average Score:", average(scores))
+            print("Average Score:", mean(scores))
             scores = []
     
     return q_table
-
-def average(values):
-    num = 0
-    for value in values:
-        num += value
-    return num/len(values)

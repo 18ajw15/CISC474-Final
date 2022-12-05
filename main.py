@@ -1,11 +1,11 @@
 from level import *
 from learning import *
 
-LEVEL = BerkeleyLevel()
+LEVEL = Berkeley_Level()
 EPSILON = 0.1
 ALPHA = 0.1
 DISCOUNT = 0.9
-EPISODES = 1000
+EPISODES = 2000
 
 if __name__ == "__main__":
     print("Starting Q Learning")

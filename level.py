@@ -46,7 +46,7 @@ class Level:
     def pacman_has_won(self):
         return len(self.get_space_coordinates(Space.PELLET)) == 0
 
-    def nearest_pellet(self, x, y):
+    def nearest_pellet_dir(self, x, y):
         position = (x, y)
         distance = float('inf')
         for x_pos in range(self.width):
@@ -94,16 +94,6 @@ class Level:
             walls.append((-1, y))
             walls.append((self.width, y))
         return walls
-    
-    def __str__(self):
-        string_representation = self.str_x_coordinates()+"\n"
-        for y in range(self.height):
-            truncated_y = str(y%10)
-            string_representation += truncated_y + " "
-            for x in range(self.width):
-                string_representation += self.get_space(x, y).value+" "
-            string_representation += truncated_y + "\n"
-        return string_representation + self.str_x_coordinates()
 
     def to_string(self, pacman, ghosts):
         string_representation = self.str_x_coordinates()+"\n"
@@ -112,12 +102,9 @@ class Level:
             string_representation += truncated_y + " "
             for x in range(self.width):
                 new_rep = self.get_space(x, y).value
-                if pacman.position[0] == x and pacman.position[1] == y:
-                    new_rep = "o"
+                new_rep = "o" if pacman.position == (x, y) else new_rep
                 for i in range(len(ghosts)):
-                    ghost = ghosts[i]
-                    if ghost.position[0] == x and ghost.position[1] == y:
-                        new_rep = str(i)
+                    new_rep = str(i) if ghosts[i].position == (x, y) else new_rep
                 string_representation += new_rep+" "
             string_representation += truncated_y + "\n"
         return string_representation + self.str_x_coordinates()
@@ -131,7 +118,7 @@ class Level:
     def reset_pellets(self):
         pass
 
-class BerkeleyLevel(Level):
+class Berkeley_Level(Level):
     def __init__(self):
         pacman_start = (8, 4)
         ghost_starts = [(8, 2), (9, 2)]
@@ -151,7 +138,7 @@ class BerkeleyLevel(Level):
         self.replace_chunk(0, 0, self.width-1, self.height-1, Space.EMPTY, Space.PELLET)
         self.replace_chunk(8, 4, 8, 4, Space.PELLET, Space.EMPTY)
 
-class DefaultLevel(Level):
+class Default_Level(Level):
     def __init__(self):
         pacman_start = (12, 22)
         ghost_starts = [(9, 10), (11, 10), (13, 10), (15, 10)]
