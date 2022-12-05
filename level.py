@@ -1,3 +1,4 @@
+import vector as vec
 from enum import Enum
 
 class Space(Enum):
@@ -7,6 +8,8 @@ class Space(Enum):
 
 class Level:
     def __init__(self, width, height, pacman_start = (0, 0), ghost_starts = [(0, 0)]):
+        self.name = "Custom Level"
+
         self.grid = [[Space.EMPTY for _ in range(height)] for _ in range(width)]
         self.width = width
         self.height = height
@@ -14,9 +17,9 @@ class Level:
         self.ghost_starts = ghost_starts
 
     def get_space(self, x, y):
-        if (0 <= x < self.width) and (0 <= y < self.height):
-            return self.grid[x][y]
-        return Space.WALL
+        if not ((0 <= x < self.width) and (0 <= y < self.height)):
+            return Space.WALL
+        return self.grid[x][y]
     
     def set_space(self, x, y, space):
         self.grid[x][y] = space
@@ -49,7 +52,7 @@ class Level:
         for x_pos in range(self.width):
             for y_pos in range(self.height):
                 if self.get_space(x_pos, y_pos) == Space.PELLET:
-                    new_dist = manhattan_distance((x_pos, y_pos), (x, y))
+                    new_dist = vec.manhattan_dist((x_pos, y_pos), (x, y))
                     if new_dist < distance:
                         distance = new_dist
                         position = (x_pos, y_pos)
@@ -133,6 +136,9 @@ class BerkeleyLevel(Level):
         pacman_start = (8, 4)
         ghost_starts = [(8, 2), (9, 2)]
         super().__init__(18, 5, pacman_start, ghost_starts)
+
+        self.name = "Berkeley Level"
+
         self.set_chunk(1, 1, 2, 3, Space.WALL)
         self.set_chunk(4, 1, 4, 3, Space.WALL)
         self.set_chunk(15, 1, 16, 3, Space.WALL)
@@ -150,6 +156,9 @@ class DefaultLevel(Level):
         pacman_start = (12, 22)
         ghost_starts = [(9, 10), (11, 10), (13, 10), (15, 10)]
         super().__init__(26, 29, pacman_start, ghost_starts)
+
+        self.name = "Default Level"
+
         self.set_chunk(12, 0, 13, 3, Space.WALL)
         self.set_chunk(1, 1, 4, 3, Space.WALL)
         self.set_chunk(6, 1, 10, 3, Space.WALL)
@@ -195,13 +204,6 @@ class DefaultLevel(Level):
         self.reset_pellets()
     
     def reset_pellets(self):
-        self.replace_chunk(0, 0, self.width-1, self.height-1, Space.EMPTY, Space.PELLET)
+        self.replace_chunk(0, 0, self.width - 1, self.height - 1, Space.EMPTY, Space.PELLET)
         self.replace_chunk(8, 8, 17, 18, Space.PELLET, Space.EMPTY)
         self.replace_chunk(12, 22, 13, 22, Space.PELLET, Space.EMPTY)
-
-def manhattan_distance(pos1, pos2):
-    return abs(pos1[0]-pos2[0]) + abs(pos1[1]-pos2[1])
-
-if __name__ == "__main__":
-    l = BerkeleyLevel()
-    print(l)

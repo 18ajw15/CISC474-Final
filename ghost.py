@@ -1,4 +1,5 @@
 import random
+import vector as vec
 
 class Ghost:
     def __init__(self, starting_position, level):
@@ -6,7 +7,7 @@ class Ghost:
         self.direction = (0, 1)
         self.level = level
 
-    def move(self):
+    def move_random(self):
         # Get possible actions and then pick a random action (random policy)
         north = (self.position[0] - 1, self.position[1])
         south = (self.position[0] + 1, self.position[1])
@@ -34,30 +35,11 @@ class Ghost:
         
         self.position = possible_actions[probability]
     
-    def move_towards_pacman(self, pacman):
-        available_actions = [(1,0),(0,1),(-1,0),(0,-1)]
-        possible_positions = []
-        walls = self.level.get_wall_coordinates()
-        for action in available_actions:
-            new_spot = (action[0] + self.position[0], action[1] + self.position[1])
-            if new_spot not in walls:
-                possible_positions.append(new_spot)
-        minimum_distance = float('inf')
-        minimum_positions = []
-        for position in possible_positions:
-            distance = manhattan_distance(pacman.position, position)
-            if distance < minimum_distance:
-                minimum_distance = distance
-                minimum_positions = [position]
-            elif distance == minimum_distance:
-                minimum_positions.append(position)
-        self.position = random.choice(minimum_positions)
-    
     def move_intelligent(self, pacman):
-        available_actions = [(1,0),(0,1),(-1,0),(0,-1)]
-        available_actions.remove((self.direction[0]*-1, self.direction[1]*-1))
+        available_actions = vec.get_unit_vecs()
+        available_actions.remove(vec.flip(self.direction))
         possible_positions = []
-        for i in range(len(available_actions)-1, -1, -1):
+        for i in range(len(available_actions) - 1, -1, -1):
             action = available_actions[i]
             position = add_coords(self.position, action)
             if self.level.is_space_wall(position[0], position[1]):
@@ -77,7 +59,7 @@ class Ghost:
         self.position = minimum_position
 
     def is_at_intersection(self):
-        available_actions = [(1,0),(0,1),(-1,0),(0,-1)]
+        available_actions = vec.get_unit_vecs()
         wall_count = 0
         for action in available_actions:
             position = add_coords(self.position, action)

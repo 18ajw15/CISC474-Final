@@ -1,11 +1,8 @@
 import random
-from enum import Enum
 from pacman import Pacman
 from ghost import Ghost
-from copy import deepcopy
 from copy import copy
-
-ALL_ACTIONS = [(1, 0), (0, 1), (-1, 0), (0, -1)]
+import vector as vec
 
 class State_Next_Struct:
     def __init__(self, state, reward, is_terminal):
@@ -13,7 +10,7 @@ class State_Next_Struct:
         self.reward = reward
         self.is_terminal = is_terminal
 
-class Rewards:
+class Rewards_Struct:
     def __init__(self, moving, eating, winning, losing):
         self.moving = moving
         self.eating = eating
@@ -24,7 +21,7 @@ class State:
     def __init__(self, level, reset = True):
         if reset:
             level.reset_pellets()
-        self.pacman = Pacman(level.pacman_start, level, ALL_ACTIONS.copy())
+        self.pacman = Pacman(level.pacman_start, level)
         self.ghosts = []
         for start in level.ghost_starts:
             ghost = Ghost(start, level)
@@ -73,15 +70,10 @@ class State:
         return State_Next_Struct(state_prime, reward, terminal)
     
     def is_touching_ghost(self, pacman, ghost):
-        x_match = pacman.position[0] == ghost.position[0]
-        y_match = pacman.position[1] == ghost.position[1]
-        return x_match and y_match
+        return pacman.position == ghost.position
     
     def get_characteristics(self):
         return (self.pacman.position, self.pacman.direction, self.nearest_pellet, self.ghost_positions)
-
-def manhattan_distance(pos1, pos2):
-    return abs(pos1[0]-pos2[0]) + abs(pos1[1]-pos2[1])
 
 class Q_Table:
     def __init__(self, width, height, actions, initial_q_values):
@@ -136,16 +128,15 @@ class Q_Table:
             del actions_to_q_values[action]
         return max(actions_to_q_values, key = actions_to_q_values.get)
 
-def q_learning(level, epsilon, alpha, discount_rate, maxEpisodes):
-    rewards = Rewards(-1, 10, 500, -500)
+def q_learning(level, epsilon, alpha, discount_rate, max_episode):
+    rewards = Rewards_Struct(-1, 10, 500, -500)
     max_steps = 250
-    q_table = Q_Table(level.width, level.height, ALL_ACTIONS.copy(), 0)
-    for episode in range(maxEpisodes):
-        if episode % 100 == 0:
-            if episode > 0:
-                print("average score:", average(scores))
-            scores = []
-            print("starting episode", episode)
+    interval = 100
+    q_table = Q_Table(level.width, level.height, vec.get_unit_vecs(), 0)
+    scores = []
+    for episode in range(max_episode):
+        if episode % interval == 0:
+            print("\nStarting Episode (", episode, "/", max_episode, ")")
         state = State(level)
         score = 10
         for step in range(max_steps):
@@ -161,11 +152,14 @@ def q_learning(level, epsilon, alpha, discount_rate, maxEpisodes):
             if prime.is_terminal:
                 break
         scores.append(score)
+        if episode % interval == interval - 1:
+            print("Average Score:", average(scores))
+            scores = []
+    
     return q_table
 
 def average(values):
-    den = len(values)
     num = 0
     for value in values:
         num += value
-    return num/den
+    return num/len(values)
