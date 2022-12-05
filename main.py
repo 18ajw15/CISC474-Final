@@ -3,7 +3,7 @@ from learning import *
 
 LEVEL = Berkeley_Level()
 EPSILON = 0.1
-ALPHA = 0.1
+ALPHA = 0.5
 DISCOUNT = 0.9
 EPISODES = 2000
 
